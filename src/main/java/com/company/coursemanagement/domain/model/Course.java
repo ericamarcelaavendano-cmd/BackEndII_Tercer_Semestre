@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Setter;
 
 @Entity
 @Table(name = "courses")
@@ -16,24 +15,19 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
     @Column(nullable = false, unique = true)
     private String code;
 
-    @Setter
     @Column(nullable = false)
     private String name;
 
-    @Setter
     @Column
     private String description;
 
-    @Setter
     @Column(nullable = false)
     private Integer maxCapacity;
 
     protected Course() {
-        // Constructor vacío requerido por JPA/Hibernate
     }
 
     public Course(String code, String name, String description, Integer maxCapacity) {
@@ -51,16 +45,31 @@ public class Course {
         return code;
     }
 
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Integer getMaxCapacity() {
         return maxCapacity;
     }
 
+    public void setMaxCapacity(Integer maxCapacity) {
+        this.maxCapacity = maxCapacity;
+    }
 }

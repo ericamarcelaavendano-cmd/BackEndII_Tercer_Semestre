@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -23,27 +22,22 @@ public class Enrollment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    @Setter
     @Column(nullable = false)
     private LocalDate enrollmentDate;
 
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EnrollmentStatus status;
 
     protected Enrollment() {
-        // Constructor vacío requerido por JPA/Hibernate
     }
 
     public Enrollment(Student student, Course course, LocalDate enrollmentDate, EnrollmentStatus status) {
@@ -61,16 +55,32 @@ public class Enrollment {
         return student;
     }
 
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
     public Course getCourse() {
         return course;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
     }
 
     public LocalDate getEnrollmentDate() {
         return enrollmentDate;
     }
 
+    public void setEnrollmentDate(LocalDate enrollmentDate) {
+        this.enrollmentDate = enrollmentDate;
+    }
+
     public EnrollmentStatus getStatus() {
         return status;
+    }
+
+    public void setStatus(EnrollmentStatus status) {
+        this.status = status;
     }
 
     public void cancel() {
