@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: course-management
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/course_management_db
+    username: course_management_user
+    password: MiClaveSegura123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  h2:
+    console:
+      enabled: false
