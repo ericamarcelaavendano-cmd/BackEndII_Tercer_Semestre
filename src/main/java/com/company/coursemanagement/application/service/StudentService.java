@@ -3,7 +3,6 @@ package com.company.coursemanagement.application.service;
 import com.company.coursemanagement.application.dto.StudentDTO;
 
 import java.util.List;
-
 public interface StudentService {
 
     StudentDTO create(StudentDTO dto);

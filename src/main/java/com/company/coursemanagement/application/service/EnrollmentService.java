@@ -1,6 +1,7 @@
 package com.company.coursemanagement.application.service;
 
 import com.company.coursemanagement.application.dto.EnrollmentDTO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -15,4 +16,8 @@ public interface EnrollmentService {
     EnrollmentDTO cancel(Long id);
 
     void delete(Long id);
+
+    void unenroll(Long id);
+
+    EnrollmentDTO enrollStudent(@Valid EnrollmentDTO dto);
 }

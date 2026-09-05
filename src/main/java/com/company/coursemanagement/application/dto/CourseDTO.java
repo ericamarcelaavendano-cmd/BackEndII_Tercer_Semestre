@@ -1,22 +1,33 @@
 package com.company.coursemanagement.application.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 public record CourseDTO(
         Long id,
 
-        @NotBlank(message = "Code is required")
-        String code,
-
-        @NotBlank(message = "Name is required")
-        String name,
+        @NotBlank(message = "El título del curso no puede estar vacío")
+        String title,
 
         String description,
 
-        @NotNull(message = "Max capacity is required")
-        @Positive(message = "Max capacity must be greater than 0")
-        Integer maxCapacity
+        String courseDescription, @NotNull(message = "Los créditos son obligatorios")
+        @Min(value = 1, message = "El curso debe tener al menos 1 crédito")
+        Integer credits
 ) {
+        public CourseDTO(Long id, String title, String description, Integer credits) {
+        }
+
+        public Integer maxCapacity() {
+            return 0;
+        }
+
+        public String code() {
+            return "";
+        }
+
+        public String name() {
+            return "";
+        }
 }

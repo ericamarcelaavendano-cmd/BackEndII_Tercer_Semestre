@@ -1,74 +1,54 @@
 package com.company.coursemanagement.application.service.impl;
 
 import com.company.coursemanagement.application.dto.CourseDTO;
-import com.company.coursemanagement.application.service.CourseService;
-import com.company.coursemanagement.domain.exception.CourseNotFoundException;
-import com.company.coursemanagement.domain.model.Course;
+import com.company.coursemanagement.entity.CourseEntity;
 import com.company.coursemanagement.domain.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
-public class CourseServiceImpl implements CourseService {
+public class CourseServiceImpl {
 
     private final CourseRepository courseRepository;
 
     public CourseServiceImpl(CourseRepository courseRepository) {
-        this.courseRepository = Objects.requireNonNull(courseRepository);
+        this.courseRepository = courseRepository;
     }
 
-    @Override
-    public CourseDTO create(CourseDTO dto) {
-        Course course = new Course(dto.code(), dto.name(), dto.description(), dto.maxCapacity());
-        Course saved = courseRepository.save(course);
-        return toDto(saved);
-    }
-
-    @Override
-    public CourseDTO findById(Long id) {
-        Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new CourseNotFoundException(id));
-        return toDto(course);
-    }
-
-    @Override
     public List<CourseDTO> findAll() {
         return courseRepository.findAll().stream()
-                .map(this::toDto)
-                .toList();
+                .map(c -> new CourseDTO(c.getId(), c.getTitle(), c.getDescription(), c.getCredits()))
+                .collect(Collectors.toList());
     }
 
-    @Override
+    public CourseDTO findById(Long id) {
+        CourseEntity c = courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado con id: " + id));
+        return new CourseDTO(c.getId(), c.getTitle(), c.getDescription(), c.getCredits());
+    }
+
+    public CourseDTO create(CourseDTO dto) {
+        CourseEntity entity = new CourseEntity(null, dto.title(), dto.description(), dto.credits());
+        CourseEntity saved = courseRepository.save(entity);
+        return new CourseDTO(saved.getId(), saved.getTitle(), saved.getDescription(), saved.getCredits());
+    }
+
     public CourseDTO update(Long id, CourseDTO dto) {
-        Course existing = courseRepository.findById(id)
-                .orElseThrow(() -> new CourseNotFoundException(id));
-
-        existing.setCode(dto.code());
-        existing.setName(dto.name());
-        existing.setDescription(dto.description());
-        existing.setMaxCapacity(dto.maxCapacity());
-
-        Course updated = courseRepository.save(existing);
-        return toDto(updated);
+        CourseEntity c = courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado con id: " + id));
+        c.setTitle(dto.title());
+        c.setDescription(dto.description());
+        c.setCredits(dto.credits());
+        CourseEntity updated = courseRepository.save(c);
+        return new CourseDTO(updated.getId(), updated.getTitle(), updated.getDescription(), updated.getCredits());
     }
 
-    @Override
     public void delete(Long id) {
         if (!courseRepository.existsById(id)) {
-            throw new CourseNotFoundException(id);
+            throw new RuntimeException("Curso no encontrado con id: " + id);
         }
         courseRepository.deleteById(id);
-    }
-
-    private CourseDTO toDto(Course course) {
-        return new CourseDTO(
-                course.getId(),
-                course.getCode(),
-                course.getName(),
-                course.getDescription(),
-                course.getMaxCapacity()
-        );
     }
 }

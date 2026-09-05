@@ -2,17 +2,9 @@ package com.company.coursemanagement.presentation.controller;
 
 import com.company.coursemanagement.application.dto.CourseDTO;
 import com.company.coursemanagement.application.service.CourseService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,30 +18,64 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public CourseDTO create(@Valid @RequestBody CourseDTO dto) {
-        return courseService.create(dto);
+    @GetMapping
+    public ResponseEntity<?> getAllCourses() {
+        try {
+            List<CourseDTO> courses = courseService.findAll();
+            return ResponseEntity.ok(courses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al listar los cursos: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
-    public CourseDTO findById(@PathVariable Long id) {
-        return courseService.findById(id);
+    public ResponseEntity<?> getCourseById(@PathVariable Long id) {
+        try {
+            CourseDTO course = courseService.findById(id);
+            return ResponseEntity.ok(course);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error inesperado: " + e.getMessage());
+        }
     }
 
-    @GetMapping
-    public List<CourseDTO> findAll() {
-        return courseService.findAll();
+    @PostMapping
+    public ResponseEntity<?> createCourse(@RequestBody CourseDTO dto) {
+        try {
+            CourseDTO created = courseService.create(dto);
+            return new ResponseEntity<>(created, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No se pudo crear el curso: " + e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public CourseDTO update(@PathVariable Long id, @Valid @RequestBody CourseDTO dto) {
-        return courseService.update(id, dto);
+    public ResponseEntity<?> updateCourse(@PathVariable Long id, @RequestBody CourseDTO dto) {
+        try {
+            CourseDTO updated = courseService.update(id, dto);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No se pudo actualizar el curso: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        courseService.delete(id);
+    public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
+        try {
+            courseService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar el curso: " + e.getMessage());
+        }
     }
 }

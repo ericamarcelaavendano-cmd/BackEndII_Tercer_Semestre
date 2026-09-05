@@ -2,6 +2,7 @@ package com.company.coursemanagement.application.service.impl;
 
 import com.company.coursemanagement.application.dto.StudentDTO;
 import com.company.coursemanagement.application.service.StudentService;
+import com.company.coursemanagement.domain.exception.StudentAlreadyExistsException;
 import com.company.coursemanagement.domain.exception.StudentNotFoundException;
 import com.company.coursemanagement.domain.model.Student;
 import com.company.coursemanagement.domain.repository.StudentRepository;
@@ -21,6 +22,11 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO create(StudentDTO dto) {
+        // Validación: Verificar que no exista un estudiante con el mismo correo
+        if (studentRepository.findByEmail(dto.email()).isPresent()) {
+            throw new StudentAlreadyExistsException(dto.email());
+        }
+
         Student student = new Student(dto.firstName(), dto.lastName(), dto.email(), dto.birthDate());
         Student saved = studentRepository.save(student);
         return toDto(saved);
@@ -55,6 +61,13 @@ public class StudentServiceImpl implements StudentService {
     public StudentDTO update(Long id, StudentDTO dto) {
         Student existing = studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(id));
+
+        // Validar si el nuevo correo ya está siendo usado por otro estudiante
+        studentRepository.findByEmail(dto.email()).ifPresent(student -> {
+            if (!student.getId().equals(id)) {
+                throw new StudentAlreadyExistsException(dto.email());
+            }
+        });
 
         existing.setFirstName(dto.firstName());
         existing.setLastName(dto.lastName());

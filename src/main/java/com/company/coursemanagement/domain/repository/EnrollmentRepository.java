@@ -1,14 +1,9 @@
 package com.company.coursemanagement.domain.repository;
 
-import com.company.coursemanagement.domain.model.Enrollment;
-import com.company.coursemanagement.domain.model.EnrollmentStatus;
+import com.company.coursemanagement.entity.EnrollmentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
-public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
-
-    List<Enrollment> findByCourseIdAndStatus(Long courseId, EnrollmentStatus status);
-
-    List<Enrollment> findByStudentIdAndCourseIdAndStatus(Long studentId, Long courseId, EnrollmentStatus status);
+@Repository
+public interface EnrollmentRepository extends JpaRepository<EnrollmentEntity, Long> {
 }

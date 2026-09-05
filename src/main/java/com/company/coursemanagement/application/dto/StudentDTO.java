@@ -3,25 +3,21 @@ package com.company.coursemanagement.application.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-
 import java.time.LocalDate;
 
 public record StudentDTO(
         Long id,
 
-        @NotBlank(message = "First name is required")
+        @NotBlank(message = "El nombre no puede estar vacío")
         String firstName,
 
-        @NotBlank(message = "Last name is required")
+        @NotBlank(message = "El apellido no puede estar vacío")
         String lastName,
 
-        @NotBlank(message = "Email is required")
-        @Email(message = "Email must be valid")
+        @NotBlank(message = "El correo no puede estar vacío")
+        @Email(message = "Debe proporcionar un formato de correo válido")
         String email,
 
-        @NotNull(message = "Birth date is required")
-        @Past(message = "Birth date must be in the past")
+        @NotNull(message = "La fecha de nacimiento es obligatoria")
         LocalDate birthDate
-) {
-}
+) {}
