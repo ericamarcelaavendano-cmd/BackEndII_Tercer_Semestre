@@ -15,46 +15,35 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String code;
-
     @Column(nullable = false)
-    private String name;
+    private String title;
 
     @Column
     private String description;
 
     @Column(nullable = false)
-    private Integer maxCapacity;
+    private Integer credits;
 
     protected Course() {
+        // Constructor vacío requerido por JPA/Hibernate
     }
 
-    public Course(String code, String name, String description, Integer maxCapacity) {
-        this.code = code;
-        this.name = name;
+    public Course(String title, String description, Integer credits) {
+        this.title = title;
         this.description = description;
-        this.maxCapacity = maxCapacity;
+        this.credits = credits;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getCode() {
-        return code;
+    public String getTitle() {
+        return title;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -65,11 +54,11 @@ public class Course {
         this.description = description;
     }
 
-    public Integer getMaxCapacity() {
-        return maxCapacity;
+    public Integer getCredits() {
+        return credits;
     }
 
-    public void setMaxCapacity(Integer maxCapacity) {
-        this.maxCapacity = maxCapacity;
+    public void setCredits(Integer credits) {
+        this.credits = credits;
     }
 }

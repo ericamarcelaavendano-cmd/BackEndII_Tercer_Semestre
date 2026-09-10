@@ -12,22 +12,8 @@ public record CourseDTO(
 
         String description,
 
-        String courseDescription, @NotNull(message = "Los créditos son obligatorios")
+        @NotNull(message = "Los créditos son obligatorios")
         @Min(value = 1, message = "El curso debe tener al menos 1 crédito")
         Integer credits
 ) {
-        public CourseDTO(Long id, String title, String description, Integer credits) {
-        }
-
-        public Integer maxCapacity() {
-            return 0;
-        }
-
-        public String code() {
-            return "";
-        }
-
-        public String name() {
-            return "";
-        }
 }
