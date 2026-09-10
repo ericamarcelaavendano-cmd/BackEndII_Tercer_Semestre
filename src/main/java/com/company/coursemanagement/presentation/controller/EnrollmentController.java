@@ -6,6 +6,7 @@ import com.company.coursemanagement.domain.exception.CourseNotFoundException;
 import com.company.coursemanagement.domain.exception.DuplicateEnrollmentException;
 import com.company.coursemanagement.domain.exception.EnrollmentNotFoundException;
 import com.company.coursemanagement.domain.exception.StudentNotFoundException;
+import com.company.coursemanagement.domain.model.EnrollmentStatus;
 import com.company.coursemanagement.presentation.exception.ErrorResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,50 @@ public class EnrollmentController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), "No se pudo crear la matrícula: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<?> findByStudent(@PathVariable Long studentId) {
+        try {
+            return ResponseEntity.ok(enrollmentService.findByStudent(studentId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Error al listar matrículas del estudiante: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/course/{courseId}")
+    public ResponseEntity<?> findByCourse(@PathVariable Long courseId) {
+        try {
+            return ResponseEntity.ok(enrollmentService.findByCourse(courseId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Error al listar matrículas del curso: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<?> findByStatus(@PathVariable String status) {
+        try {
+            EnrollmentStatus parsed = EnrollmentStatus.valueOf(status.toUpperCase());
+            return ResponseEntity.ok(enrollmentService.findByStatus(parsed));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), "Status inválido, usa ACTIVE, CANCELLED o COMPLETED"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Error al filtrar por status: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/course/{courseId}/count-active")
+    public ResponseEntity<?> countActiveByCourse(@PathVariable Long courseId) {
+        try {
+            return ResponseEntity.ok(enrollmentService.countActiveByCourse(courseId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Error al contar matrículas activas: " + e.getMessage()));
         }
     }
 

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
@@ -49,6 +51,26 @@ public class StudentController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Error al buscar estudiantes: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/sorted")
+    public ResponseEntity<?> findAllSorted() {
+        try {
+            return ResponseEntity.ok(studentService.findAllSortedByLastName());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Error al listar estudiantes ordenados: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/born-before")
+    public ResponseEntity<?> findBornBefore(@RequestParam("date") String date) {
+        try {
+            return ResponseEntity.ok(studentService.findBornBefore(LocalDate.parse(date)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), "Fecha inválida, usa formato YYYY-MM-DD: " + e.getMessage()));
         }
     }
 

@@ -27,8 +27,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final CourseRepository courseRepository;
 
     public EnrollmentServiceImpl(EnrollmentRepository enrollmentRepository,
-                                  StudentRepository studentRepository,
-                                  CourseRepository courseRepository) {
+                                 StudentRepository studentRepository,
+                                 CourseRepository courseRepository) {
         this.enrollmentRepository = Objects.requireNonNull(enrollmentRepository);
         this.studentRepository = Objects.requireNonNull(studentRepository);
         this.courseRepository = Objects.requireNonNull(courseRepository);
@@ -66,6 +66,32 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollmentRepository.findAll().stream()
                 .map(this::toDto)
                 .toList();
+    }
+
+    @Override
+    public List<EnrollmentDTO> findByStudent(Long studentId) {
+        return enrollmentRepository.findByStudentId(studentId).stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<EnrollmentDTO> findByCourse(Long courseId) {
+        return enrollmentRepository.findByCourseId(courseId).stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<EnrollmentDTO> findByStatus(EnrollmentStatus status) {
+        return enrollmentRepository.findByStatus(status).stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    @Override
+    public long countActiveByCourse(Long courseId) {
+        return enrollmentRepository.countByCourseIdAndStatus(courseId, EnrollmentStatus.ACTIVE);
     }
 
     @Override

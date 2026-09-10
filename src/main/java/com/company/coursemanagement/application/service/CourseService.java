@@ -12,6 +12,10 @@ public interface CourseService {
 
     List<CourseDTO> findAll();
 
+    List<CourseDTO> search(String query);
+
+    List<CourseDTO> findByMinCredits(Integer credits);
+
     CourseDTO update(Long id, CourseDTO dto);
 
     void delete(Long id);

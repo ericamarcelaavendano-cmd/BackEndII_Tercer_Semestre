@@ -2,6 +2,7 @@ package com.company.coursemanagement.application.service.impl;
 
 import com.company.coursemanagement.application.dto.CourseDTO;
 import com.company.coursemanagement.application.service.CourseService;
+import com.company.coursemanagement.domain.exception.CourseAlreadyExistsException;
 import com.company.coursemanagement.domain.exception.CourseNotFoundException;
 import com.company.coursemanagement.domain.model.Course;
 import com.company.coursemanagement.domain.repository.CourseRepository;
@@ -21,6 +22,10 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO create(CourseDTO dto) {
+        if (courseRepository.existsByTitleIgnoreCase(dto.title())) {
+            throw new CourseAlreadyExistsException(dto.title());
+        }
+
         Course course = new Course(dto.title(), dto.description(), dto.credits());
         Course saved = courseRepository.save(course);
         return toDto(saved);
@@ -36,6 +41,21 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseDTO> findAll() {
         return courseRepository.findAll().stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<CourseDTO> search(String query) {
+        String term = query == null ? "" : query.trim();
+        return courseRepository.findByTitleContainingIgnoreCase(term).stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<CourseDTO> findByMinCredits(Integer credits) {
+        return courseRepository.findByCreditsGreaterThanEqual(credits).stream()
                 .map(this::toDto)
                 .toList();
     }

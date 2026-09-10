@@ -2,6 +2,7 @@ package com.company.coursemanagement.presentation.controller;
 
 import com.company.coursemanagement.application.dto.CourseDTO;
 import com.company.coursemanagement.application.service.CourseService;
+import com.company.coursemanagement.domain.exception.CourseAlreadyExistsException;
 import com.company.coursemanagement.domain.exception.CourseNotFoundException;
 import com.company.coursemanagement.presentation.exception.ErrorResponse;
 import jakarta.validation.Valid;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -31,9 +33,32 @@ public class CourseController {
         try {
             CourseDTO created = courseService.create(dto);
             return new ResponseEntity<>(created, HttpStatus.CREATED);
+        } catch (CourseAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResponse(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT.getReasonPhrase(), e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), "No se pudo crear el curso: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam("q") String q) {
+        try {
+            return ResponseEntity.ok(courseService.search(q));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Error al buscar cursos: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/min-credits")
+    public ResponseEntity<?> findByMinCredits(@RequestParam("value") Integer value) {
+        try {
+            return ResponseEntity.ok(courseService.findByMinCredits(value));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Error al filtrar cursos por créditos: " + e.getMessage()));
         }
     }
 
